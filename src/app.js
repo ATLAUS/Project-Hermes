@@ -1,8 +1,9 @@
 const express = require("express");
 const app = express();
-const { User } = require("../models/User")
+const { User, Matcher, Party } = require("../models/index")
 const { db } = require("../db/connection");
 const { check, validationResult } = require('express-validator')
+const { Op } = require('@sequelize/core')
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -35,5 +36,26 @@ app.delete("/users/:id", async (req, res) => {
 
 
 // Matcher Routes
+app.post("/users/:id/matcher", async (req, res) => {
+    const createdMatcher = await Matcher.create(req.body)
+    await User.findByPk(req.params.id)
+        .then(user => user.addMatcher(createdMatcher))
+    res.json(createdMatcher)
+})
 
+// Match Route
+app.get("/users/:userId/matcher/:matcherId/match", async (req, res) => {
+    const user = await User.findByPk(req.params.userId)
+    const userMatcher = await Matcher.findByPk(req.params.matcherId)
+    const match = await Matcher.findOne({
+        where: {
+            userId: { [Op.ne]: userMatcher.UserId},
+            platform: userMatcher.platform,
+            gameName: userMatcher.gameName
+        }
+    })
+    res.json({userMatcher, match})
+})
+
+// Return
 module.exports = app;
