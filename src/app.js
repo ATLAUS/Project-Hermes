@@ -11,8 +11,8 @@ app.use(express.urlencoded());
 // User routes (mainly for manual testing)
 app.get("/users", async(req, res) => {
     const allUsers = await User.findAll();
-    res.send(allUsers)
-})
+    res.send(allUsers);
+});
 
 app.get("/users/:id", async(req, res) => {
     const id = req.params.id;
@@ -22,25 +22,35 @@ app.get("/users/:id", async(req, res) => {
 
 app.post("/users", async (req, res) => {
     const createdUser = await User.create(req.body);
-    res.json(createdUser)
-})
+    res.json(createdUser);
+});
 
 app.delete("/users/:id", async (req, res) => {
     const deleted = await User.destroy({
         where: {
             id: req.params.id
         }
-    })
-    res.sendStatus(200)
+    });
+    res.sendStatus(200);
 });
 
 
 // Matcher Routes
 app.post("/users/:id/matcher", async (req, res) => {
-    const createdMatcher = await Matcher.create(req.body)
+    const createdMatcher = await Matcher.create(req.body);
     await User.findByPk(req.params.id)
-        .then(user => user.addMatcher(createdMatcher))
-    res.json(createdMatcher)
+        .then(user => user.addMatcher(createdMatcher));
+    res.json(createdMatcher);
+});
+
+app.delete("/users/:userId/matcher/:matcherId", async (req, res) => {
+    await Matcher.destroy({
+        where: {
+            id: req.params.matcherId,
+            userId: req.params.userId
+        }
+    });
+    res.sendStatus(200);
 })
 
 // Match Route
