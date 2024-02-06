@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { User, Matcher, Party } = require("../models/index")
+const { User, Matcher, Party, MatcherParty } = require("../models/index")
 const { db } = require("../db/connection");
 const { check, validationResult } = require('express-validator')
 const { Op } = require('@sequelize/core')
@@ -61,22 +61,32 @@ app.put("/users/:userId/matcher/:matcherId", async (req, res) => {
         }
     });
     const updatedMatcher = await matcher.update(req.body);
-    res.json(updatedMatcher)
-})
+    res.json(updatedMatcher);
+});
 
 // Match Route
 app.get("/users/:userId/matcher/:matcherId/match", async (req, res) => {
-    const user = await User.findByPk(req.params.userId)
-    const userMatcher = await Matcher.findByPk(req.params.matcherId)
+    const user = await User.findByPk(req.params.userId);
+    const userMatcher = await Matcher.findByPk(req.params.matcherId);
     const match = await Matcher.findOne({
         where: {
             userId: { [Op.ne]: userMatcher.UserId},
             platform: userMatcher.platform,
             gameName: userMatcher.gameName
         }
-    })
-    res.json({userMatcher, match})
-})
+    });
+    res.json({userMatcher, match});
+});
+
+// Party routes
+app.delete("/party/:partyId", async(req, res) => {
+    await Party.destroy({
+        where: {
+            id: req.params.partyId
+        }
+    });
+    res.sendStatus(200);
+});
 
 // Return
 module.exports = app;
