@@ -51,6 +51,17 @@ app.delete("/users/:userId/matcher/:matcherId", async (req, res) => {
         }
     });
     res.sendStatus(200);
+});
+
+app.put("/users/:userId/matcher/:matcherId", async (req, res) => {
+    const matcher = await Matcher.findOne({
+        where: {
+            id: req.params.matcherId,
+            userId: req.params.userId
+        }
+    });
+    const updatedMatcher = await matcher.update(req.body);
+    res.json(updatedMatcher)
 })
 
 // Match Route
