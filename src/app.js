@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { User, Matcher, Party, MatcherParty } = require("../models/index")
+const { User, Matcher, Party, UserParty } = require("../models/index")
 const { db } = require("../db/connection");
 const { check, validationResult } = require('express-validator')
 const { Op } = require('@sequelize/core')
@@ -66,7 +66,7 @@ app.put("/users/:userId/matcher/:matcherId", async (req, res) => {
 
 // Match Route
 app.get("/users/:userId/matcher/:matcherId/match", async (req, res) => {
-    const user = await User.findByPk(req.params.userId);
+    const user1 = await User.findByPk(req.params.userId);
     const userMatcher = await Matcher.findByPk(req.params.matcherId);
     const match = await Matcher.findOne({
         where: {
@@ -75,7 +75,13 @@ app.get("/users/:userId/matcher/:matcherId/match", async (req, res) => {
             gameName: userMatcher.gameName
         }
     });
-    res.json({userMatcher, match});
+    const user2 = await User.findByPk(match.dataValues.UserId);
+    const newParty = await Party.create({
+        gameName: userMatcher.gameName
+    });
+    newParty.addUser(user1);
+    newParty.addUser(user2);
+    res.json(newParty);
 });
 
 // Party routes

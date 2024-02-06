@@ -1,11 +1,11 @@
 const { db, DataTypes } = require('../db/connection')
-const { Matcher, Party } = require('../models/index')
+const { User, Party } = require('./index')
 
-const MatcherParty = db.define('MatcherParty', {
-    MatcherId: {
+const UserParty = db.define('UserParty', {
+    UserId: {
         type: DataTypes.INTEGER,
         references: {
-            model: Matcher,
+            model: User,
             key: 'id'
         }
     },
@@ -19,5 +19,5 @@ const MatcherParty = db.define('MatcherParty', {
 });
 
 module.exports = {
-    MatcherParty
+    UserParty
 }
