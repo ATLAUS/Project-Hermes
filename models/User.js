@@ -4,7 +4,10 @@ const User = db.define('User',
 {
     userId: DataTypes.STRING,
     userName: DataTypes.STRING,
-    activeMatcher: DataTypes.BOOLEAN,
+    activeParty: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
 },{
     timestamps: true
 })
