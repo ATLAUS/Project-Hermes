@@ -15,7 +15,7 @@ const testUsers = [
     },
     {
         userId: '123125',
-        userName: 'Daniel'
+        userName: 'Aaron'
     }
 ]
 
@@ -45,17 +45,30 @@ const testMatchers = [
 
 beforeAll(async() => {
     await db.sync({ force: true })
-    const [daniel, senai, aaron] = await User.bulkCreate(testUsers)
-    const [palOne, palTwo, tark] = await Matcher.bulkCreate(testMatchers)
-
+    await User.bulkCreate(testUsers)
+    await Matcher.bulkCreate(testMatchers)  
 })
 
 describe('User routes', () => {
     test('GET /Users', async () => {
         const res = await request(app).get("/users")
 
+        expect(res.statusCode).toBe(200)
+        expect(res.body.users.length).toBe(testUsers.length)
+        expect(res.body.users[0]).toEqual(expect.objectContaining(testUsers[0]))
+    })
 
+    test('GET /Users/id', async () => {
+        const res = await request(app).get('/users/123123')
 
-        console.log(JSON.stringify(res.body, 0, 2))
+        expect(res.statusCode).toBe(200)
+        expect(res.body.user).toEqual(expect.objectContaining(testUsers[0]))
+    })
+
+    test('GET /Users/id where user does not exist', async() => {
+        const res = await request(app).get('/users/545544')
+
+        expect(res.statusCode).toBe(404)
+        expect(res.error.text).toBe("Not Found")
     })
 })
