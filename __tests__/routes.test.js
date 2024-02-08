@@ -154,6 +154,7 @@ describe('Matcher routes', () => {
     expect(res.body.matcher.User.id).toBe(user.id)
 
     // console.log(JSON.stringify(res.body.matcher, 0, 2))
+    // console.log(JSON.stringify(res.statusCode, 0, 2))
   })
   // TODO Add post test if matcher or user is not provided
 })

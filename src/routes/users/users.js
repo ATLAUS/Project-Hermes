@@ -34,7 +34,7 @@ router.get('/:id', async (req, res, next) => {
   }
 })
 
-// Create a user in the db
+// Create a new user if user does not already exist
 //TODO Need to add proper validation to verify that a user is in the req.body
 router.post('/', async (req, res, next) => {
   const user = req.body

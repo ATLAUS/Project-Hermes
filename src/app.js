@@ -13,12 +13,6 @@ app.use('/users', userRouter)
 app.use('/matchers', matcherRouter)
 
 // // Matcher Routes
-// app.post("/users/:id/matcher", async (req, res) => {
-//     const createdMatcher = await Matcher.create(req.body);
-//     await User.findByPk(req.params.id)
-//         .then(user => user.addMatcher(createdMatcher));
-//     res.json(createdMatcher);
-// });
 
 // app.delete("/users/:userId/matcher/:matcherId", async (req, res) => {
 //     await Matcher.destroy({
