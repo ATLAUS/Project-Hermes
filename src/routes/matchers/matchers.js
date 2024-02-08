@@ -2,9 +2,10 @@ const express = require('express')
 const { User, Matcher } = require('../../../models')
 
 const router = express.Router()
+const { requiresAuth } = require('express-openid-connect')
 
 // Find all machers
-router.get('/', async (req, res, next) => {
+router.get('/', requiresAuth(), async (req, res, next) => {
   try {
     const matchers = await Matcher.findAll()
     if (matchers.length < 1) {
@@ -17,7 +18,7 @@ router.get('/', async (req, res, next) => {
 })
 
 // Create a new Matcher and associate a User (creator)
-router.post('/', async (req, res, next) => {
+router.post('/', requiresAuth(), async (req, res, next) => {
   const { user, matcher } = req.body
   //TODO Add error handling to ensure body is not empty or
   // has the incorrect values

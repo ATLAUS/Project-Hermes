@@ -1,10 +1,11 @@
 const express = require('express')
 const { User } = require('../../../models')
+const { requiresAuth } = require('express-openid-connect')
 
 const router = express.Router()
 
 // Find all users
-router.get('/', async (req, res, next) => {
+router.get('/', requiresAuth(), async (req, res, next) => {
   try {
     const users = await User.findAll()
     if (users.length < 1) {
@@ -17,7 +18,7 @@ router.get('/', async (req, res, next) => {
 })
 
 // Find user by ID
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', requiresAuth(), async (req, res, next) => {
   const { id } = req.params
   try {
     const user = await User.findOne({
@@ -36,7 +37,7 @@ router.get('/:id', async (req, res, next) => {
 
 // Create a new user if user does not already exist
 //TODO Need to add proper validation to verify that a user is in the req.body
-router.post('/', async (req, res, next) => {
+router.post('/', requiresAuth(), async (req, res, next) => {
   const user = req.body
   // TODO fix this validation
   if (JSON.stringify(user) === '{}') {
@@ -63,7 +64,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requiresAuth(), async (req, res, next) => {
   const { id } = req.params
   try {
     const userToDelete = await User.destroy({
