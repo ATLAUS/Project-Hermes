@@ -12,29 +12,6 @@ app.use('/users', userRouter)
 // Matcher routes
 app.use('/matchers', matcherRouter)
 
-// // Matcher Routes
-
-// app.delete("/users/:userId/matcher/:matcherId", async (req, res) => {
-//     await Matcher.destroy({
-//         where: {
-//             id: req.params.matcherId,
-//             userId: req.params.userId
-//         }
-//     });
-//     res.sendStatus(200);
-// });
-
-// app.put("/users/:userId/matcher/:matcherId", async (req, res) => {
-//     const matcher = await Matcher.findOne({
-//         where: {
-//             id: req.params.matcherId,
-//             userId: req.params.userId
-//         }
-//     });
-//     const updatedMatcher = await matcher.update(req.body);
-//     res.json(updatedMatcher);
-// });
-
 // // Should be the party route and a post request because
 // // ULTIMATLY whats happening is either a party gets created or not
 // // Match Route

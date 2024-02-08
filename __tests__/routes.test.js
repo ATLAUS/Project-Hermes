@@ -161,7 +161,7 @@ describe('Matcher routes', () => {
   // TODO Add post test if matcher or user is not provided
 
   test('DELETE /matchers/id', async () => {
-    // First create the matcher to delete
+    // Create the matcher to delete
     const senai = await User.findOne({
       where: {
         // Picking Senai's id from the testUsers array
@@ -184,5 +184,39 @@ describe('Matcher routes', () => {
 
     expect(res.statusCode).toBe(200)
   })
-  // TODO Add delete route for an id that doesn't exist
+  // TODO Add delete test for an id that doesn't exist
+
+  test('PUT /matchers/id', async () => {
+    // Create matcher to update
+    const aaron = await User.findOne({
+      where: {
+        userId: testUsers[2].userId
+      }
+    })
+
+    const newMatcher = {
+      gameName: 'Rust',
+      platform: 'PC',
+      objective: 'Farm',
+      note: 'Looking to cook up some iron.'
+    }
+
+    const updates = {
+      objective: 'grind',
+      note: 'Need to raid.'
+    }
+
+    const matcherToUpdate = await Matcher.create(newMatcher)
+    await matcherToUpdate.setUser(aaron)
+
+    const res = await request(app).put(`/matchers/${matcherToUpdate.id}`).send({
+      updates
+    })
+
+    const matcherValidation = await Matcher.findByPk(matcherToUpdate.id)
+
+    expect(res.statusCode).toBe(200)
+    expect(matcherValidation).toEqual(expect.objectContaining(updates))
+  })
+  // TODO Add put test for an id that doesn't exist
 })

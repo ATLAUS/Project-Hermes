@@ -62,4 +62,26 @@ router.delete('/:id', async (req, res, next) => {
   }
 })
 
+router.put('/:id', async (req, res, next) => {
+  const { id } = req.params
+  const { updates } = req.body
+  // TODO Need to update with platform as well
+  const { objective, note } = updates
+  try {
+    const matcherToUpdate = await Matcher.findByPk(id)
+    if (!matcherToUpdate) {
+      return res.sendStatus(404)
+    }
+
+    await matcherToUpdate.update({
+      ...matcherToUpdate,
+      objective,
+      note
+    })
+    res.sendStatus(200)
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router
