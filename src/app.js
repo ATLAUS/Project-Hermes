@@ -1,13 +1,16 @@
-const { userRouter, matchRouter } = require('./routes')
-const express = require("express");
-const app = express();
+const { userRouter, matcherRouter } = require('./routes')
+const express = require('express')
+const app = express()
 // const { Op } = require('@sequelize/core')
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 
 // User routes (mainly for manual testing)
-app.use('/users', userRouter);
+app.use('/users', userRouter)
+
+// Matcher routes
+app.use('/matchers', matcherRouter)
 
 // // Matcher Routes
 // app.post("/users/:id/matcher", async (req, res) => {
@@ -38,7 +41,7 @@ app.use('/users', userRouter);
 //     res.json(updatedMatcher);
 // });
 
-// // Should be the party route and a post request because 
+// // Should be the party route and a post request because
 // // ULTIMATLY whats happening is either a party gets created or not
 // // Match Route
 // app.get("/users/:userId/matcher/:matcherId/match", async (req, res) => {
@@ -71,4 +74,4 @@ app.use('/users', userRouter);
 // });
 
 // Return
-module.exports = app;
+module.exports = app
