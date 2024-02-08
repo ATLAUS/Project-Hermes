@@ -10,27 +10,6 @@ const userRouter = require('./routes/users/users')
 // User routes (mainly for manual testing)
 app.use('/users', userRouter);
 
-// app.get("/users/:id", async(req, res) => {
-//     const id = req.params.id;
-//     const user = await User.findByPk(id);
-//     res.send(user);
-// });
-
-// app.post("/users", async (req, res) => {
-//     const createdUser = await User.create(req.body);
-//     res.json(createdUser);
-// });
-
-// app.delete("/users/:id", async (req, res) => {
-//     const deleted = await User.destroy({
-//         where: {
-//             id: req.params.id
-//         }
-//     });
-//     res.sendStatus(200);
-// });
-
-
 // // Matcher Routes
 // app.post("/users/:id/matcher", async (req, res) => {
 //     const createdMatcher = await Matcher.create(req.body);
