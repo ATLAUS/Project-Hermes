@@ -1,11 +1,10 @@
+const { userRouter, matchRouter } = require('./routes')
 const express = require("express");
 const app = express();
 // const { Op } = require('@sequelize/core')
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}));
-
-const userRouter = require('./routes/users/users')
 
 // User routes (mainly for manual testing)
 app.use('/users', userRouter);
