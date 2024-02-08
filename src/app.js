@@ -1,4 +1,4 @@
-const { userRouter, matcherRouter } = require('./routes')
+const { userRouter, matcherRouter, partyRouter } = require('./routes')
 const express = require('express')
 const app = express()
 // const { Op } = require('@sequelize/core')
@@ -11,6 +11,9 @@ app.use('/users', userRouter)
 
 // Matcher routes
 app.use('/matchers', matcherRouter)
+
+//Party routes
+app.use('/parties', partyRouter)
 
 // // Should be the party route and a post request because
 // // ULTIMATLY whats happening is either a party gets created or not

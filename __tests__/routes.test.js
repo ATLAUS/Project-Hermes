@@ -133,7 +133,8 @@ describe('Matcher routes', () => {
   })
 
   test('POST /matchers', async () => {
-    //Get user Daniel from the db to use to test matcher creation
+    // Get user Daniel from the db to use to test matcher creation
+    // TODO Modify to check for party creation
     const user = await User.findByPk(1)
 
     const daniel = testUsers[0]
@@ -159,6 +160,7 @@ describe('Matcher routes', () => {
     // console.log(JSON.stringify(res.statusCode, 0, 2))
   })
   // TODO Add post test if matcher or user is not provided
+  // TODO Add post test to check that a party was not created
 
   test('DELETE /matchers/id', async () => {
     // Create the matcher to delete
@@ -219,4 +221,8 @@ describe('Matcher routes', () => {
     expect(matcherValidation).toEqual(expect.objectContaining(updates))
   })
   // TODO Add put test for an id that doesn't exist
+})
+
+describe('Party routes', () => {
+  test('GET /parties', async () => {})
 })

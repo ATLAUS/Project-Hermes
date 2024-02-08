@@ -30,7 +30,7 @@ router.post('/', async (req, res, next) => {
       }
     })
 
-    // Create new matcher and associate the user
+    // Create new Matcher and associate the user
     const newMatcher = await Matcher.create(matcher)
     // TODO add error handling here in case matcher does not match Matcher schema
     await newMatcher.setUser(creator)
@@ -48,6 +48,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+// Delete a Matcher
 router.delete('/:id', async (req, res, next) => {
   const { id } = req.params
   try {
@@ -62,6 +63,7 @@ router.delete('/:id', async (req, res, next) => {
   }
 })
 
+// Update a Matcher
 router.put('/:id', async (req, res, next) => {
   const { id } = req.params
   const { updates } = req.body
