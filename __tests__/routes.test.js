@@ -241,5 +241,17 @@ describe('Matcher routes', () => {
 })
 
 describe('Party routes', () => {
-  test('GET /parties', async () => {})
+  test('GET /parties', async () => {
+    const aaron = await User.findOne({
+      where: {
+        userId: testUsers[2].userId
+      }
+    })
+
+    const res = await request(app).get(`/parties/${aaron.id}`)
+
+    expect(res.statusCode).toBe(200)
+    expect(Array.isArray(res.body.parties)).toBe(true)
+  })
+  // TODO add test for when user does not belong to a party
 })
