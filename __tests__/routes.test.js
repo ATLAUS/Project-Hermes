@@ -118,6 +118,7 @@ describe('User routes', () => {
     expect(res.statusCode).toBe(404)
     expect(res.error.text).toBe('Not Found')
   })
+  // TODO add delete test to validate that deleting a user will cascade to their matchers
 })
 
 describe('Matcher routes', () => {
@@ -143,6 +144,7 @@ describe('Matcher routes', () => {
       objective: 'grind',
       note: 'Questing!'
     }
+
     const res = await request(app).post('/matchers').send({
       user: daniel,
       matcher: newMatcher
@@ -157,4 +159,30 @@ describe('Matcher routes', () => {
     // console.log(JSON.stringify(res.statusCode, 0, 2))
   })
   // TODO Add post test if matcher or user is not provided
+
+  test('DELETE /matchers/id', async () => {
+    // First create the matcher to delete
+    const senai = await User.findOne({
+      where: {
+        // Picking Senai's id from the testUsers array
+        userId: testUsers[1].userId
+      }
+    })
+
+    const newMatcher = {
+      gameName: 'Call of Duty',
+      platform: 'PC',
+      objective: 'grind',
+      note: 'Questing!'
+    }
+
+    const matcherToDestroy = await Matcher.create(newMatcher)
+    await matcherToDestroy.setUser(senai)
+
+    const res = await request(app).delete(`/matchers/${matcherToDestroy.id}`)
+    // const res = await request(app).delete(`/matchers/8`)
+
+    expect(res.statusCode).toBe(200)
+  })
+  // TODO Add delete route for an id that doesn't exist
 })

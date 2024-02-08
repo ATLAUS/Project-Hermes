@@ -48,4 +48,18 @@ router.post('/', async (req, res, next) => {
   }
 })
 
+router.delete('/:id', async (req, res, next) => {
+  const { id } = req.params
+  try {
+    const matcherToDestroy = await Matcher.findByPk(id)
+    if (!matcherToDestroy) {
+      return res.statusCode(404)
+    }
+    await matcherToDestroy.destroy()
+    res.sendStatus(200)
+  } catch (err) {
+    next(err)
+  }
+})
+
 module.exports = router
