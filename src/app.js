@@ -11,20 +11,7 @@ app.use('/users', userRouter)
 // Matcher routes
 app.use('/matchers', matcherRouter)
 
-//Party routes
+// Party routes
 app.use('/parties', partyRouter)
 
-// // Should be the party route and a post request because
-// // ULTIMATLY whats happening is either a party gets created or not
-// // Party routes
-// app.delete("/party/:partyId", async(req, res) => {
-//     await Party.destroy({
-//         where: {
-//             id: req.params.partyId
-//         }
-//     });
-//     res.sendStatus(200);
-// });
-
-// Return
 module.exports = app
