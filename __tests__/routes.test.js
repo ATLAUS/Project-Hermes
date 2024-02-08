@@ -132,9 +132,8 @@ describe('Matcher routes', () => {
     )
   })
 
-  test('POST /matchers', async () => {
+  test('POST /matchers and create a party if other matcher exists', async () => {
     // Get user Daniel from the db to use to test matcher creation
-    // TODO Modify to check for party creation
     const user = await User.findByPk(1)
 
     const daniel = testUsers[0]
@@ -152,15 +151,33 @@ describe('Matcher routes', () => {
     })
 
     expect(res.statusCode).toBe(201)
-    expect(res.body.matcher).toEqual(expect.objectContaining(newMatcher))
-    expect(res.body.matcher.User).toEqual(expect.objectContaining(testUsers[0]))
-    expect(res.body.matcher.User.id).toBe(user.id)
+    expect(res.body.party.Users[0]).toEqual(expect.objectContaining(testUsers[0]))
+    expect(res.body.party.Users[0].id).toBe(user.id)
+  })
 
-    // console.log(JSON.stringify(res.body.matcher, 0, 2))
-    // console.log(JSON.stringify(res.statusCode, 0, 2))
+  test('POST /matchers and return newly created matcher because no match was found', async () => {
+    // Get user Daniel from the db to use to test matcher creation
+    const user = await User.findByPk(1)
+
+    const daniel = testUsers[0]
+
+    const newMatcher = {
+      gameName: 'EA FC',
+      platform: 'PC',
+      objective: 'casual',
+      note: 'Looking to run some pro clubs'
+    }
+
+    const res = await request(app).post('/matchers').send({
+      user: daniel,
+      matcher: newMatcher
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.body.matcher).toEqual(expect.objectContaining(newMatcher))
+    expect(res.body.matcher.User.id).toBe(user.id)
   })
   // TODO Add post test if matcher or user is not provided
-  // TODO Add post test to check that a party was not created
 
   test('DELETE /matchers/id', async () => {
     // Create the matcher to delete

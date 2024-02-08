@@ -1,5 +1,6 @@
 const express = require('express')
 const { User, Matcher } = require('../../../models')
+const { matchFinder } = require('../../util')
 
 const router = express.Router()
 
@@ -42,7 +43,14 @@ router.post('/', async (req, res, next) => {
       }
     })
 
-    res.status(201).send({ matcher: returnMatcher })
+    //TODO Implement matching here
+    let party = await matchFinder(returnMatcher, creator)
+
+    if(!party) {
+      res.status(201).send({ matcher: returnMatcher })
+    }
+  
+    res.status(201).send({ party: party })
   } catch (err) {
     next(err)
   }
