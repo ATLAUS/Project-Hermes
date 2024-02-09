@@ -67,6 +67,7 @@ router.post('/', requiresAuth(), async (req, res, next) => {
 
 // Delete a Matcher
 router.delete('/:id', async (req, res, next) => {
+  // Matcher id
   const { id } = req.params
   try {
     const matcherToDestroy = await Matcher.findByPk(id)
@@ -82,6 +83,7 @@ router.delete('/:id', async (req, res, next) => {
 
 // Update a Matcher
 router.put('/:id', async (req, res, next) => {
+  // Matcher id
   const { id } = req.params
   const { updates } = req.body
   // TODO Need to update with platform as well
