@@ -56,7 +56,7 @@ router.post('/', requiresAuth(), async (req, res, next) => {
     let party = await matchFinder(returnMatcher, creator)
 
     if (!party) {
-      res.status(201).send({ matcher: returnMatcher })
+      return res.status(201).send({ matcher: returnMatcher })
     }
 
     res.status(201).send({ party: party })
@@ -71,7 +71,7 @@ router.delete('/:id', requiresAuth(), async (req, res, next) => {
   try {
     const matcherToDestroy = await Matcher.findByPk(id)
     if (!matcherToDestroy) {
-      return res.statusCode(404)
+      return res.sendStatus(404)
     }
     await matcherToDestroy.destroy()
     res.sendStatus(200)
