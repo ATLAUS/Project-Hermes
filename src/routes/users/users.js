@@ -40,7 +40,6 @@ router.get('/:id', requiresAuth(), async (req, res, next) => {
 router.post('/', requiresAuth(), async (req, res, next) => {
   const { nickname, email, sub } = req.oidc.user
 
-  console.log(req.oidc.user)
   const userId = sub.split('|')[1]
 
   try {
