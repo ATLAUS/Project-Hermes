@@ -12,8 +12,8 @@ router.get('/', requiresAuth(), async (req, res, next) => {
       return res.sendStatus(404)
     }
     res.send({ users })
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    next(error)
   }
 })
 
@@ -30,37 +30,40 @@ router.get('/:id', requiresAuth(), async (req, res, next) => {
       return res.sendStatus(404)
     }
     res.send({ user: user })
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    next(error)
   }
 })
 
 // Create a new user if user does not already exist
-//TODO Need to add proper validation to verify that a user is in the req.body
+//TODO Need to add proper validation to verify that user data is in the req.oidc.user
 router.post('/', requiresAuth(), async (req, res, next) => {
-  const user = req.body
-  // TODO fix this validation
-  if (JSON.stringify(user) === '{}') {
-    return res.sendStatus(400)
-  }
+  const { nickname, email, sub } = req.oidc.user
+
+  const userId = sub.split('|')[1]
+
   try {
     // Check and see if the user already exists in the db
     // TODO See if findorcreate would make more sense
     let userCheck = await User.findOne({
       where: {
-        userId: user.userId
+        userId: userId
       }
     })
 
     // If a userCheck comes back null because a user does not exist in the db
     // A new one is created. ELSE the user does exist in the db and we dont create a new one
     if (userCheck === null) {
-      let newUser = await User.create(user)
+      let newUser = await User.create({
+        userId: userId,
+        userName: nickname,
+        email: email
+      })
       return res.sendStatus(201)
     }
     return res.sendStatus(400)
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    next(error)
   }
 })
 
@@ -76,8 +79,8 @@ router.delete('/:id', requiresAuth(), async (req, res, next) => {
       return res.sendStatus(404)
     }
     res.sendStatus(200)
-  } catch (err) {
-    next(err)
+  } catch (error) {
+    next(error)
   }
 })
 module.exports = router
