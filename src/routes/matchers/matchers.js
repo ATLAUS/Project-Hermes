@@ -15,18 +15,17 @@ router.get('/', requiresAuth(), async (req, res, next) => {
     const user = await User.findOne({
       where: {
         userId: userId
+      },
+      include: {
+        model: Matcher
       }
     })
 
-    const matchers = await Matcher.findAll({
-      where: {
-        UserId: user.id
-      }
-    })
-    if (matchers.length < 1) {
+    if (user.Matchers.length < 1) {
       return res.sendStatus(404)
     }
-    res.send({ matchers })
+
+    res.send({ matchers: user.Matchers })
   } catch (err) {
     next(err)
   }
