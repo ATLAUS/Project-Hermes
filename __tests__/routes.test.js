@@ -45,8 +45,22 @@ const testMatchers = [
 
 const newUser = {
   userId: '123126',
-  userName: 'Bobert'
+  userName: 'Bobert',
 }
+
+//Mock auth0
+jest.mock('express-openid-connect', () => ({
+  auth: jest.fn(() => {
+    return (req, res, next) => {
+      next()
+    }
+  }),
+  requiresAuth: jest.fn(() => {
+    return (req, res, next) => {
+      next()
+    }
+  })
+}))
 
 beforeAll(async () => {
   await db.sync({ force: true })
