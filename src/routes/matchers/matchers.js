@@ -8,12 +8,24 @@ const router = express.Router()
 
 // Find all machers
 router.get('/', requiresAuth(), async (req, res, next) => {
+  // REFACTOR
+  const { sub } = req.oidc.user
+  const userId = sub.split('|')[1]
   try {
-    const matchers = await Matcher.findAll()
-    if (matchers.length < 1) {
+    const user = await User.findOne({
+      where: {
+        userId: userId
+      },
+      include: {
+        model: Matcher
+      }
+    })
+
+    if (user.Matchers.length < 1) {
       return res.sendStatus(404)
     }
-    res.send({ matchers })
+
+    res.send({ matchers: user.Matchers })
   } catch (err) {
     next(err)
   }
