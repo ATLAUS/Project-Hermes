@@ -309,7 +309,7 @@ describe('Matcher routes', () => {
 })
 
 describe('Party routes', () => {
-  test('GET /parties', async () => {
+  test('GET /parties to see a users active parties', async () => {
     const chrevor = await User.findOne({
       where: {
         userId: testUsers[2].userId
