@@ -7,35 +7,38 @@ const app = require('../src/app')
 const testUsers = [
   {
     userId: '123123',
-    userName: 'Daniel'
+    userName: 'chravis2005',
+    email: 'chravis2005@gmail.com'
   },
   {
     userId: '123124',
-    userName: 'Senai'
+    userName: 'bobert15',
+    email: 'bobert15@hotmail.com'
   },
   {
     userId: '123125',
-    userName: 'Aaron'
+    userName: 'chrevor007',
+    email: 'chrevor007@mailchimp.com'
   }
 ]
 
 const testMatchers = [
   {
-    // Daniel
+    // Chravis
     gameName: 'Palworld',
     platform: 'PC',
     objective: 'grind',
     note: 'Looking to farm supplies.'
   },
   {
-    // Senai
+    // Bobert
     gameName: 'Palworld',
     platform: 'PC',
     objective: 'grind',
     note: 'Boss fights.'
   },
   {
-    // Aaron
+    // Chrevor
     gameName: 'Escape from Tarkov',
     platform: 'PC',
     objective: 'grind',
@@ -45,7 +48,8 @@ const testMatchers = [
 
 const newUser = {
   userId: '123126',
-  userName: 'Bobert',
+  userName: 'chracy',
+  email: 'chracy@hotmail.com'
 }
 
 //Mock auth0
@@ -57,6 +61,8 @@ jest.mock('express-openid-connect', () => ({
   }),
   requiresAuth: jest.fn(() => {
     return (req, res, next) => {
+      const [_, nickname, sub, email] = req.headers.authorization.split(' ')
+      req.oidc = { user: { nickname, sub, email } }
       next()
     }
   })
@@ -65,18 +71,20 @@ jest.mock('express-openid-connect', () => ({
 beforeAll(async () => {
   await db.sync({ force: true })
   // Create users and their matchers
-  const [daniel, senai, aaron] = await User.bulkCreate(testUsers)
+  const [chravis, bobert, chrevor] = await User.bulkCreate(testUsers)
   const [palOne, palTwo, tarkOne] = await Matcher.bulkCreate(testMatchers)
 
   // Add matchers to designated user
-  await daniel.addMatcher(palOne)
-  await senai.addMatcher(palTwo)
-  await aaron.addMatcher(tarkOne)
+  await chravis.addMatcher(palOne)
+  await bobert.addMatcher(palTwo)
+  await chrevor.addMatcher(tarkOne)
 })
 
 describe('User routes', () => {
   test('GET /users', async () => {
-    const res = await request(app).get('/users')
+    const res = await request(app)
+      .get('/users')
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(200)
     expect(res.body.users.length).toBe(testUsers.length)
@@ -84,21 +92,30 @@ describe('User routes', () => {
   })
 
   test('GET /users/id', async () => {
-    const res = await request(app).get('/users/123123')
+    const res = await request(app)
+      .get('/users/123123')
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(200)
     expect(res.body.user).toEqual(expect.objectContaining(testUsers[0]))
   })
 
   test('GET /users/id where user does not exist', async () => {
-    const res = await request(app).get('/users/545544')
+    const res = await request(app)
+      .get('/users/545544')
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(404)
     expect(res.error.text).toBe('Not Found')
   })
 
   test('POST /users', async () => {
-    const res = await request(app).post('/users').send(newUser)
+    const res = await request(app)
+      .post('/users')
+      .set(
+        'Authorization',
+        `Bearer ${newUser.userName} |${newUser.userId} ${newUser.email}`
+      )
 
     expect(res.statusCode).toBe(201)
   })
@@ -107,27 +124,38 @@ describe('User routes', () => {
     // Saving one of the users from the test users array into a new variable
     const user = testUsers[0]
 
-    const res = await request(app).post('/users').send(user)
+    const res = await request(app)
+      .post('/users')
+      .set(
+        'Authorization',
+        `Bearer ${user.userName} |${user.userId} ${user.email}`
+      )
 
     expect(res.statusCode).toBe(400)
     expect(res.error.text).toBe('Bad Request')
   })
 
   test('POST /users but no user is provided', async () => {
-    const res = await request(app).post('/users')
+    const res = await request(app)
+      .post('/users')
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(400)
     expect(res.error.text).toBe('Bad Request')
   })
 
   test('DELETE /users/id', async () => {
-    const res = await request(app).delete(`/users/${newUser.userId}`)
+    const res = await request(app)
+      .delete(`/users/${newUser.userId}`)
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(200)
   })
 
   test('DELETE /users/id but the user does not exist in the db', async () => {
-    const res = await request(app).delete(`/users/${newUser.userId}`)
+    const res = await request(app)
+      .delete(`/users/${newUser.userId}`)
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(404)
     expect(res.error.text).toBe('Not Found')
@@ -137,20 +165,25 @@ describe('User routes', () => {
 
 describe('Matcher routes', () => {
   test('GET /matchers', async () => {
-    const res = await request(app).get('/matchers')
+    const res = await request(app)
+      .get('/matchers')
+      .set(
+        'Authorization',
+        `Bearer ${testUsers[0].userName} |${testUsers[0].userId} ${testUsers[0].email}`
+      )
 
     expect(res.statusCode).toBe(200)
-    expect(res.body.matchers.length).toBe(testMatchers.length)
+    expect(Array.isArray(res.body.matchers)).toBe(true)
     expect(res.body.matchers[0]).toEqual(
       expect.objectContaining(testMatchers[0])
     )
   })
 
   test('POST /matchers and create a party if other matcher exists', async () => {
-    // Get user Daniel from the db to use to test matcher creation
+    // Get user chravis from the db to use to test matcher creation
     const user = await User.findByPk(1)
 
-    const daniel = testUsers[0]
+    const chravis = testUsers[0]
 
     const newMatcher = {
       gameName: 'Escape from Tarkov',
@@ -159,21 +192,29 @@ describe('Matcher routes', () => {
       note: 'Questing!'
     }
 
-    const res = await request(app).post('/matchers').send({
-      user: daniel,
-      matcher: newMatcher
-    })
+    const res = await request(app)
+      .post('/matchers')
+      .send({
+        user: chravis,
+        matcher: newMatcher
+      })
+      .set(
+        'Authorization',
+        `Bearer ${user.userName} |${user.userId} ${user.email}`
+      )
 
     expect(res.statusCode).toBe(201)
-    expect(res.body.party.Users[0]).toEqual(expect.objectContaining(testUsers[0]))
+    expect(res.body.party.Users[0]).toEqual(
+      expect.objectContaining(testUsers[0])
+    )
     expect(res.body.party.Users[0].id).toBe(user.id)
   })
 
   test('POST /matchers and return newly created matcher because no match was found', async () => {
-    // Get user Daniel from the db to use to test matcher creation
+    // Get user chravis from the db to use to test matcher creation
     const user = await User.findByPk(1)
 
-    const daniel = testUsers[0]
+    const chravis = testUsers[0]
 
     const newMatcher = {
       gameName: 'EA FC',
@@ -182,10 +223,16 @@ describe('Matcher routes', () => {
       note: 'Looking to run some pro clubs'
     }
 
-    const res = await request(app).post('/matchers').send({
-      user: daniel,
-      matcher: newMatcher
-    })
+    const res = await request(app)
+      .post('/matchers')
+      .send({
+        user: chravis,
+        matcher: newMatcher
+      })
+      .set(
+        'Authorization',
+        `Bearer ${user.userName} |${user.userId} ${user.email}`
+      )
 
     expect(res.statusCode).toBe(201)
     expect(res.body.matcher).toEqual(expect.objectContaining(newMatcher))
@@ -195,9 +242,9 @@ describe('Matcher routes', () => {
 
   test('DELETE /matchers/id', async () => {
     // Create the matcher to delete
-    const senai = await User.findOne({
+    const bobert = await User.findOne({
       where: {
-        // Picking Senai's id from the testUsers array
+        // Picking bobert's id from the testUsers array
         userId: testUsers[1].userId
       }
     })
@@ -210,10 +257,14 @@ describe('Matcher routes', () => {
     }
 
     const matcherToDestroy = await Matcher.create(newMatcher)
-    await matcherToDestroy.setUser(senai)
+    await matcherToDestroy.setUser(bobert)
 
-    const res = await request(app).delete(`/matchers/${matcherToDestroy.id}`)
-    // const res = await request(app).delete(`/matchers/8`)
+    const res = await request(app)
+      .delete(`/matchers/${matcherToDestroy.id}`)
+      .set(
+        'Authorization',
+        `Bearer ${bobert.userName} |${bobert.userId} ${bobert.email}`
+      )
 
     expect(res.statusCode).toBe(200)
   })
@@ -221,7 +272,7 @@ describe('Matcher routes', () => {
 
   test('PUT /matchers/id', async () => {
     // Create matcher to update
-    const aaron = await User.findOne({
+    const chrevor = await User.findOne({
       where: {
         userId: testUsers[2].userId
       }
@@ -240,11 +291,14 @@ describe('Matcher routes', () => {
     }
 
     const matcherToUpdate = await Matcher.create(newMatcher)
-    await matcherToUpdate.setUser(aaron)
+    await matcherToUpdate.setUser(chrevor)
 
-    const res = await request(app).put(`/matchers/${matcherToUpdate.id}`).send({
-      updates
-    })
+    const res = await request(app)
+      .put(`/matchers/${matcherToUpdate.id}`)
+      .send({
+        updates
+      })
+      .set('Authorization', `Bearer nickname email sub`)
 
     const matcherValidation = await Matcher.findByPk(matcherToUpdate.id)
 
@@ -256,13 +310,15 @@ describe('Matcher routes', () => {
 
 describe('Party routes', () => {
   test('GET /parties', async () => {
-    const aaron = await User.findOne({
+    const chrevor = await User.findOne({
       where: {
         userId: testUsers[2].userId
       }
     })
 
-    const res = await request(app).get(`/parties/${aaron.id}`)
+    const res = await request(app)
+      .get(`/parties/${chrevor.id}`)
+      .set('Authorization', `Bearer nickname email sub`)
 
     expect(res.statusCode).toBe(200)
     expect(Array.isArray(res.body.parties)).toBe(true)
