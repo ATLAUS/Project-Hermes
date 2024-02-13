@@ -7,8 +7,8 @@ const app = require('../src/app')
 const testUsers = [
   {
     userId: '123123',
-    userName: 'chravis2005',
-    email: 'chravis2005@gmail.com'
+    userName: 'chravis',
+    email: 'chravis2007@gmail.com'
   },
   {
     userId: '123124',
@@ -310,6 +310,7 @@ describe('Matcher routes', () => {
 
 describe('Party routes', () => {
   test('GET /parties to see a users active parties', async () => {
+    // Get PK or id for user in the db
     const chrevor = await User.findOne({
       where: {
         userId: testUsers[2].userId
@@ -323,5 +324,19 @@ describe('Party routes', () => {
     expect(res.statusCode).toBe(200)
     expect(Array.isArray(res.body.parties)).toBe(true)
   })
-  // TODO add test for when user does not belong to a party
+
+  test('GET /parties for a user not in a party', async () => {
+    // Get PK or id for user in the db
+    const bobert = await User.findOne({
+      where: {
+        userId: testUsers[1].userId
+      }
+    })
+
+    const res = await request(app)
+      .get(`/parties/${bobert.id}`)
+      .set('Authorization', `Bearer nickname email sub`)
+
+    expect(res.statusCode).toBe(404)
+  })
 })
