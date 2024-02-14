@@ -57,6 +57,7 @@ router.post('/', requiresAuth(), async (req, res, next) => {
     // TODO add error handling here in case matcher does not match Matcher schema
     await newMatcher.setUser(creator)
 
+    // TODO See if UserId can be assigned in the lines above to avoid finding ther user AGAIN
     // Find the newly created matcher along with the user who created
     const returnMatcher = await Matcher.findByPk(newMatcher.id, {
       include: {
