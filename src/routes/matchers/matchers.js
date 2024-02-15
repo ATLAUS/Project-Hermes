@@ -7,14 +7,13 @@ const { requiresAuth } = require('express-openid-connect')
 const router = express.Router()
 
 // Find all machers
-router.get('/', requiresAuth(), async (req, res, next) => {
+router.get('/', async (req, res, next) => {
   // REFACTOR
-  const { sub } = req.oidc.user
-  const userId = sub.split('|')[1]
+ const userId = req.user.id
   try {
     const user = await User.findOne({
       where: {
-        userId: userId
+        id: userId
       },
       include: {
         model: Matcher
@@ -32,11 +31,11 @@ router.get('/', requiresAuth(), async (req, res, next) => {
 })
 
 // Create a new Matcher and associate a User (creator)
-router.post('/', requiresAuth(), async (req, res, next) => {
-  const { nickname, sub } = req.oidc.user
+router.post('/', async (req, res, next) => {
+
+  const { userId, userName } = req.user
   const { matcher } = req.body
 
-  const userId = sub.split('|')[1]
   //TODO Add error handling to ensure body is not empty or
   // has the incorrect values
   try {
@@ -44,7 +43,7 @@ router.post('/', requiresAuth(), async (req, res, next) => {
     const creator = await User.findOne({
       where: {
         userId: userId,
-        userName: nickname
+        userName: userName
       }
     })
 
@@ -78,11 +77,11 @@ router.post('/', requiresAuth(), async (req, res, next) => {
   }
 })
 
-// Delete a Matcher
-router.delete('/:id', requiresAuth(), async (req, res, next) => {
-  const { id } = req.params
+// Delete a Matcher by their ID
+router.delete('/:matcherId', async (req, res, next) => {
+  const { matcherId } = req.params
   try {
-    const matcherToDestroy = await Matcher.findByPk(id)
+    const matcherToDestroy = await Matcher.findByPk(matcherId)
     if (!matcherToDestroy) {
       return res.sendStatus(404)
     }
@@ -94,13 +93,13 @@ router.delete('/:id', requiresAuth(), async (req, res, next) => {
 })
 
 // Update a Matcher
-router.put('/:id', requiresAuth(), async (req, res, next) => {
-  const { id } = req.params
+router.put('/:matcherId', async (req, res, next) => {
+  const { matcherId } = req.params
   const { updates } = req.body
   // TODO Need to update with platform as well
   const { objective, note } = updates
   try {
-    const matcherToUpdate = await Matcher.findByPk(id)
+    const matcherToUpdate = await Matcher.findByPk(matcherId)
     if (!matcherToUpdate) {
       return res.sendStatus(404)
     }

@@ -4,11 +4,11 @@ const { User, Matcher, Party } = require('../../../models')
 const router = express.Router()
 const { requiresAuth } = require('express-openid-connect')
 
-router.get('/:id', requiresAuth(), async (req, res, next) => {
+router.get('/', requiresAuth(), async (req, res, next) => {
   // Userid
-  const { id } = req.params
+  const userId = req.user.id
   try {
-    const user = await User.findByPk(id)
+    const user = await User.findByPk(userId)
 
     const userParties = await user.getParties()
     if (userParties < 1) {

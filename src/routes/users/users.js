@@ -5,7 +5,7 @@ const { requiresAuth } = require('express-openid-connect')
 const router = express.Router()
 
 // Find all users
-router.get('/', requiresAuth(), async (req, res, next) => {
+router.get('/all', async (req, res, next) => {
   try {
     const users = await User.findAll()
     if (users.length < 1) {
@@ -18,13 +18,12 @@ router.get('/', requiresAuth(), async (req, res, next) => {
 })
 
 // Find user by ID
-router.get('/:id', requiresAuth(), async (req, res, next) => {
-  // TODO Decided if better to pass by params instead of req.oidc.user
-  const { id } = req.params
+router.get('/', async (req, res, next) => {
+  const { id } = req.user
   try {
     const user = await User.findOne({
       where: {
-        userId: id
+        id: id
       }
     })
     if (!user) {
@@ -36,47 +35,13 @@ router.get('/:id', requiresAuth(), async (req, res, next) => {
   }
 })
 
-// Create a new user if user does not already exist
-//TODO Need to add proper validation to verify that user data is in the req.oidc.user
-router.post('/', requiresAuth(), async (req, res, next) => {
-  const { nickname, email, sub } = req.oidc.user
-
-  const userId = sub.split('|')[1]
-  if (!userId) {
-    return res.sendStatus(400)
-  }
-
-  try {
-    // Check and see if the user already exists in the db
-    // TODO See if findorcreate would make more sense
-    let userCheck = await User.findOne({
-      where: {
-        userId: userId
-      }
-    })
-
-    // If a userCheck comes back null because a user does not exist in the db
-    // A new one is created. ELSE the user does exist in the db and we dont create a new one
-    if (userCheck === null) {
-      let newUser = await User.create({
-        userId: userId,
-        userName: nickname,
-        email: email
-      })
-      return res.sendStatus(201)
-    }
-    return res.sendStatus(400)
-  } catch (error) {
-    next(error)
-  }
-})
-
-router.delete('/:id', requiresAuth(), async (req, res, next) => {
-  const { id } = req.params
+// Delete a user by id
+router.delete('/', requiresAuth(), async (req, res, next) => {
+  const { id } = req.user
   try {
     const userToDelete = await User.destroy({
       where: {
-        userId: id
+        id: id
       }
     })
     if (!userToDelete) {
