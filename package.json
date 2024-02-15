@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "jest --runInBand --watchAll",
-    "start": "nodemon server.js",
+    "start": "node db/seed.js && nodemon server.js",
     "seed": "cd db && node seed.js"
   },
   "dependencies": {
