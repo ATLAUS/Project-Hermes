@@ -19,6 +19,7 @@ router.get('/', requiresAuth(), async (req, res, next) => {
 
 // Find user by ID
 router.get('/:id', requiresAuth(), async (req, res, next) => {
+  // TODO Decided if better to pass by params instead of req.oidc.user
   const { id } = req.params
   try {
     const user = await User.findOne({
@@ -41,6 +42,9 @@ router.post('/', requiresAuth(), async (req, res, next) => {
   const { nickname, email, sub } = req.oidc.user
 
   const userId = sub.split('|')[1]
+  if (!userId) {
+    return res.sendStatus(400)
+  }
 
   try {
     // Check and see if the user already exists in the db
