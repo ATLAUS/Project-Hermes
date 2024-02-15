@@ -14,6 +14,10 @@ const seed = async() => {
         createdUsers[1].addMatcher([createdMatchers[1]])
         createdUsers[2].addMatcher([createdMatchers[2]])
         await createdParty.addUsers([createdUsers[0], createdUsers[1]])
+        
+        await createdMatchers[0].update({ activeParty: true})
+        await createdMatchers[1].update({ activeParty: true})
+
         await createdUsers[0].update({ activeParty : true })
         await createdUsers[1].update({ activeParty : true })
         console.log('db populated!')
