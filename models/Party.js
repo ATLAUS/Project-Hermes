@@ -6,6 +6,10 @@ const Party = db.define(
         gameName: {
            type: DataTypes.STRING,
            defaultValue: "test"
+        },
+        active: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         }
     },
     {
