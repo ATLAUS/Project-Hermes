@@ -13,7 +13,9 @@ const seed = async() => {
         createdUsers[0].addMatcher([createdMatchers[0]])
         createdUsers[1].addMatcher([createdMatchers[1]])
         createdUsers[2].addMatcher([createdMatchers[2]])
+        createdUsers[3].addMatcher([createdMatchers[3]])
         await createdParty.addUsers([createdUsers[0], createdUsers[1]])
+        await createdParty.addMatchers([createdMatchers[0], createdMatchers[1]])
         
         await createdMatchers[0].update({ activeParty: true})
         await createdMatchers[1].update({ activeParty: true})

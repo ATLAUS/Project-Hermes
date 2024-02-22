@@ -8,6 +8,9 @@ User.hasMany(Matcher, {
 }) // User can have multiple Matchers
 Matcher.belongsTo(User) // Matcher belongs to one User
 
+Party.hasMany(Matcher)
+Matcher.belongsTo(Party)
+
 User.belongsToMany(Party, { through: 'User_Party' })
 Party.belongsToMany(User, { through: 'User_Party' })
 

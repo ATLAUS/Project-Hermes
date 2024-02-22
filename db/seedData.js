@@ -15,6 +15,11 @@ module.exports = {
             userName: 'chrevor007',
             email: 'chrevor007@mailchimp.com'
         },
+        {
+            userId: '123126',
+            userName: 'chracy008',
+            email: 'chracy008@mailchimp.com'
+        },
     ],
     matchers: [
         {
@@ -35,5 +40,11 @@ module.exports = {
             objective: 'grind',
             note: 'Need Roubles.',
         },
+        {
+            gameName: 'Escape from Tarkov',
+            platform: 'PC',
+            objective: 'casual',
+            note: 'Scav run',
+        }
     ],
 }

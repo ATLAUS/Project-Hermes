@@ -7,7 +7,7 @@ const { Op } = require('@sequelize/core')
 const matchFinder = async (matcher, creator) => {
   const match = await Matcher.findOne({
     where: {
-      userId: { [Op.ne]: matcher.User.id },
+      userId: { [Op.ne]: creator.id },
       platform: matcher.platform,
       gameName: matcher.gameName,
       activeParty: false
@@ -27,6 +27,7 @@ const matchFinder = async (matcher, creator) => {
   })
 
   await newParty.addUsers([creator, matchedUser])
+  await newParty.addMatchers([matcher, match])
 
   // Set activeParty for matchers
   await matcher.update({
