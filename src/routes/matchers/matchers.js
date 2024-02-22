@@ -6,7 +6,7 @@ const { requiresAuth } = require('express-openid-connect')
 
 const router = express.Router()
 
-// Find all machers
+// Find all matchers
 router.get('/', async (req, res, next) => {
   // REFACTOR
  const userId = req.user.id
