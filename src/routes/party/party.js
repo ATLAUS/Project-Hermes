@@ -43,23 +43,9 @@ router.put("/leave/:partyId", async (req, res, next) => {
     await party.update({active: false})
 
     // Find user1 
-    const user1 = await User.findByPk(party.Users[0].id, 
-    //   {
-    //   include: {
-    //     model: Matcher,
-    //     attributes: ['activeMatcher']
-    //   }
-    // }
-    )
+    const user1 = await User.findByPk(party.Users[0].id)
     // Find user2
-    const user2 = await User.findByPk(party.Users[1].id,
-    //   {
-    //   include: {
-    //     model: Matcher,
-    //     attributes: ['activeMatcher']
-    //   }
-    // }
-    )
+    const user2 = await User.findByPk(party.Users[1].id)
     
     await user1.update({activeParty: false})
     await user2.update({activeParty: false})
