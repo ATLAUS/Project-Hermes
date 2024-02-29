@@ -14,7 +14,7 @@
 ## Setup
 1. **Log in and Get Cookie (in browser):**
     - Navigate to https://project-hermes.onrender.com/ and log in or sign up.
-    - Open the Inspector (or DevTools).
+    - Open the Inspector (or Developer tools).
     - In the Application tab, navigate to Storage > Cookie > https://project-hermes.onrender.com/
     - Copy the Value field for the cookie with the Name appSession
     - Make note of the values in Domain and Path fields for the appSession cookie
