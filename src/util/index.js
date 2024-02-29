@@ -1,9 +1,8 @@
 const { User, Matcher, Party } = require('../../models')
 const { Op } = require('@sequelize/core')
-// TODO add function to find matches upon matcher creation
 
 // TODO if party size is added, will need to look for a party first
-// with the same gamename and check the amount of users associated with the party
+// with the same gamename and check the amount of users associated with the party.
 const matchFinder = async (matcher, creator) => {
   const match = await Matcher.findOne({
     where: {
@@ -29,6 +28,7 @@ const matchFinder = async (matcher, creator) => {
   await newParty.addUsers([creator, matchedUser])
   await newParty.addMatchers([matcher, match])
 
+  // TODO make util function loop through instances and change activeParty to true.
   // Set activeParty for matchers
   await matcher.update({
     activeParty: true

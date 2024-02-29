@@ -4,7 +4,7 @@ const { requiresAuth } = require('express-openid-connect')
 
 const router = express.Router()
 
-// Find all users
+// Find all users (for testing purposes).
 router.get('/all', async (req, res, next) => {
   try {
     const users = await User.findAll()
@@ -17,7 +17,7 @@ router.get('/all', async (req, res, next) => {
   }
 })
 
-// Find user by ID
+// Find user by ID.
 router.get('/', async (req, res, next) => {
   const { id } = req.user
   try {
@@ -35,7 +35,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-// Delete a user by id
+// Delete a user by id.
 router.delete('/', requiresAuth(), async (req, res, next) => {
   const { id } = req.user
   try {
