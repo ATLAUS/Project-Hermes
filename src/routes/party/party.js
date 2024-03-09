@@ -2,7 +2,7 @@ const express = require('express')
 const { User, Matcher, Party } = require('../../../models')
 
 const router = express.Router()
-const { matchFinder } = require('../../util')
+const { MatchFinder } = require('../../util')
 
 // Get all parties associated to the signed in user.
 router.get('/', async (req, res, next) => {
@@ -22,9 +22,9 @@ router.get('/', async (req, res, next) => {
 })
 
 // Sets the users activeParty status to false.
-router.put("/leave/:partyId", async (req, res, next) => {
+router.put('/leave/:partyId', async (req, res, next) => {
   try {
-      // Find Party.
+    // Find Party.
     const party = await Party.findByPk(req.params.partyId, {
       include: [
         {
@@ -39,28 +39,27 @@ router.put("/leave/:partyId", async (req, res, next) => {
     }
 
     // Change active field to false.
-    await party.update({active: false})
+    await party.update({ active: false })
 
     // TODO Get the users from the party variable instead of requerying the db.
-    // Find user1. 
+    // Find user1.
     const user1 = await User.findByPk(party.Users[0].id)
     // Find user2.
     const user2 = await User.findByPk(party.Users[1].id)
-    
-    await user1.update({activeParty: false})
-    await user2.update({activeParty: false})
+
+    await user1.update({ activeParty: false })
+    await user2.update({ activeParty: false })
 
     res.sendStatus(200)
-
   } catch (error) {
     next(error)
   }
 })
 
 // Remove the user from current party and find a new match.
-router.put("/rematch/:partyId", async (req, res, next) => {
+router.put('/rematch/:partyId', async (req, res, next) => {
   try {
-      // Find Party.
+    // Find Party.
     const party = await Party.findByPk(req.params.partyId, {
       include: [
         {
@@ -78,7 +77,7 @@ router.put("/rematch/:partyId", async (req, res, next) => {
     }
 
     // TODO Get users from the party variable.
-    // Find user1. 
+    // Find user1.
     const user1 = await User.findByPk(req.user.id)
     // Find user2.
     const user2 = await User.findByPk(party.Users[1].id)
@@ -86,7 +85,7 @@ router.put("/rematch/:partyId", async (req, res, next) => {
     let matcher
 
     // Find the matcher belonging to the signed in user.
-    for (let i = 0; i < party.Matchers.length; i ++) {
+    for (let i = 0; i < party.Matchers.length; i++) {
       if (party.Matchers[i].UserId == req.user.id) {
         matcher = party.Matchers[i]
         party.Matchers.splice(i, 1)
@@ -95,21 +94,19 @@ router.put("/rematch/:partyId", async (req, res, next) => {
     }
 
     // Look for new match.
-    let newParty = await matchFinder(matcher, user1)
+    let newParty = await MatchFinder(matcher, user1)
     if (!newParty) {
-      return res.status(404).send({"message" : "No new match found."})
+      return res.status(404).send({ message: 'No new match found.' })
     }
 
-    await party.update({active: false}) // Change active field to false
-    await user2.update({activeParty: false}) // Change the other User's activeParty field to false
-    await party.Matchers[0].update({activeParty: false})
+    await party.update({ active: false }) // Change active field to false
+    await user2.update({ activeParty: false }) // Change the other User's activeParty field to false
+    await party.Matchers[0].update({ activeParty: false })
 
-    res.status(201).send({party: newParty})
-
+    res.status(201).send({ party: newParty })
   } catch (error) {
     next(error)
   }
 })
-
 
 module.exports = router

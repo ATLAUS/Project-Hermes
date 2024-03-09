@@ -1,9 +1,18 @@
 const { User, Matcher, Party } = require('../../models')
 const { Op } = require('@sequelize/core')
 
+// ActiveParty assignment.
+const setActiveParty = async (modelArr) => {
+  for (const model of modelArr) {
+    await model.update({
+      activeParty: true
+    })
+  }
+}
+
 // TODO if party size is added, will need to look for a party first
 // with the same gamename and check the amount of users associated with the party.
-const matchFinder = async (matcher, creator) => {
+const MatchFinder = async (matcher, creator) => {
   const match = await Matcher.findOne({
     where: {
       userId: { [Op.ne]: creator.id },
@@ -28,23 +37,10 @@ const matchFinder = async (matcher, creator) => {
   await newParty.addUsers([creator, matchedUser])
   await newParty.addMatchers([matcher, match])
 
-  // TODO make util function loop through instances and change activeParty to true.
-  // Set activeParty for matchers
-  await matcher.update({
-    activeParty: true
-  })
-  await match.update({
-    activeParty: true
-  })
+  let modelArray = [matcher, match, creator, matchedUser]
 
-  // Set activeParty status for users
-  await creator.update({
-    activeParty: true
-  })
-
-  await matchedUser.update({
-    activeParty: true
-  })
+  // TODO look at error handling.
+  await setActiveParty(modelArray)
 
   const partyWithUsers = await Party.findByPk(newParty.id, {
     include: {
@@ -55,5 +51,5 @@ const matchFinder = async (matcher, creator) => {
 }
 
 module.exports = {
-  matchFinder
+  MatchFinder
 }
