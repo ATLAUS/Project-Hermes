@@ -25,12 +25,12 @@ app.use(express.urlencoded({ extended: true }))
 app.use(userAuth)
 
 // User routes (mainly for manual testing)
-app.use('/users', userRouter)
+app.use('/api/users', userRouter)
 
 // Matcher routes
-app.use('/matchers', matcherRouter)
+app.use('/api/matchers', matcherRouter)
 
 // Party routes
-app.use('/parties', partyRouter)
+app.use('/api/parties', partyRouter)
 
 module.exports = app
