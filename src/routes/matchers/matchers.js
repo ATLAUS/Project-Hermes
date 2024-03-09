@@ -66,8 +66,7 @@ router.post('/', async (req, res, next) => {
       return res.status(201).send({ matcher: returnMatcher })
     }
 
-    // TODO edit party object sent.
-    res.status(201).send({ party: party })
+    res.status(201).send({ party })
   } catch (err) {
     next(err)
   }
