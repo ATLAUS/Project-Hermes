@@ -29,14 +29,14 @@ router.get('/', async (req, res, next) => {
     if (!user) {
       return res.sendStatus(404)
     }
-    res.send({ user: user })
+    res.send({ user })
   } catch (error) {
     next(error)
   }
 })
 
 // Delete a user by id.
-router.delete('/', requiresAuth(), async (req, res, next) => {
+router.delete('/', async (req, res, next) => {
   const { id } = req.user
   try {
     const userToDelete = await User.destroy({
