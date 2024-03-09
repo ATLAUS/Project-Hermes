@@ -1,13 +1,13 @@
 const express = require('express')
 const { User, Matcher } = require('../../../models')
-const { matchFinder } = require('../../util')
+const { MatchFinder } = require('../../util')
 
 const router = express.Router()
 
 // Find all matcher belonging to signed in user.
 router.get('/', async (req, res, next) => {
   // REFACTOR
- const userId = req.user.id
+  const userId = req.user.id
   try {
     const user = await User.findOne({
       where: {
@@ -30,9 +30,8 @@ router.get('/', async (req, res, next) => {
 
 // Create a new Matcher and associate a User (creator).
 router.post('/', async (req, res, next) => {
-
   const { userId, userName } = req.user
-   //TODO Add error handling to ensure body is not empty or
+  //TODO Add error handling to ensure body is not empty or
   // has the incorrect values.
   const { matcher } = req.body
 
@@ -61,14 +60,13 @@ router.post('/', async (req, res, next) => {
     })
 
     // Find similar matcher and create the Party.
-    let party = await matchFinder(returnMatcher, creator)
+    let party = await MatchFinder(returnMatcher, creator)
 
     if (!party) {
       return res.status(201).send({ matcher: returnMatcher })
     }
 
-    // TODO edit party object sent.
-    res.status(201).send({ party: party })
+    res.status(201).send({ party })
   } catch (err) {
     next(err)
   }

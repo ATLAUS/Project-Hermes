@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "test": "jest --runInBand --watchAll",
+    "test:dep": "jest --runInBand --watchAll",
+    "test:single": "npm test -- mock.test.js",
     "start": "node db/seed.js && nodemon server.js",
     "seed": "cd db && node seed.js"
   },
