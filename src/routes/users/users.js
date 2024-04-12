@@ -1,7 +1,5 @@
 const express = require('express')
 const { User } = require('../../../models')
-const { requiresAuth } = require('express-openid-connect')
-
 const router = express.Router()
 
 // Find all users (for testing purposes).
