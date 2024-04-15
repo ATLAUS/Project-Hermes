@@ -1,9 +1,9 @@
 const { User } = require('../../models')
 
 const userAuth = async (req, res, next) => {
-  // Get user details from the req.oidc.
-  const { nickname, email, sub } = req.oidc.user
-  const userId = sub.split('|')[1]
+  // Get the user details from the headers
+  const userInfo = JSON.parse(req.headers['x-user-info'])
+  const userId = userInfo.sub.split('|')[1]
 
   try {
     // Check and see if the user already exists in the db.
@@ -18,8 +18,8 @@ const userAuth = async (req, res, next) => {
     if (!userCheck) {
       let newUser = await User.create({
         userId: userId,
-        userName: nickname,
-        email: email
+        userName: userInfo.nickname,
+        email: userInfo.email
       })
       req.user = newUser
       next()

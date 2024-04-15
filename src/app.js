@@ -2,27 +2,31 @@ require('dotenv').config('.env')
 const { userRouter, matcherRouter, partyRouter } = require('./routes')
 const express = require('express')
 const app = express()
-const { auth } = require('express-openid-connect')
+const { auth } = require('express-oauth2-jwt-bearer')
 const { userAuth } = require('./middleware')
-
-const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_BASE_URL } =
+const cors = require('cors')
+const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_BASE_URL, AUTH0_SIGNING_ALGO } =
   process.env
 
-const config = {
-  authRequired: true,
-  auth0Logout: true,
+const jwtCheck = auth({
   secret: AUTH0_SECRET,
-  baseURL: AUTH0_AUDIENCE,
-  clientID: AUTH0_CLIENT_ID,
-  issuerBaseURL: AUTH0_BASE_URL
-}
+  audience: AUTH0_AUDIENCE,
+  issuerBaseURL: AUTH0_BASE_URL,
+  tokenSigningAlg: AUTH0_SIGNING_ALGO
+})
 
-app.use(auth(config))
+app.use(cors())
+app.use(jwtCheck)
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(userAuth)
+
+// FOR DEMO
+app.get('/test', (req, res, next) => {
+  res.send({ msg: 'Hello World' })
+})
 
 // User routes (mainly for manual testing)
 app.use('/api/users', userRouter)
