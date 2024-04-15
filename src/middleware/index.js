@@ -31,7 +31,6 @@ const userAuth = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-  // next()
 }
 
 module.exports = {

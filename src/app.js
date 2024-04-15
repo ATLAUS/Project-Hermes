@@ -23,9 +23,10 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(userAuth)
 
-// app.get('/test', (req, res, next) => {
-//   res.send({ msg: 'Hello World' })
-// })
+// FOR DEMO
+app.get('/test', (req, res, next) => {
+  res.send({ msg: 'Hello World' })
+})
 
 // User routes (mainly for manual testing)
 app.use('/api/users', userRouter)
