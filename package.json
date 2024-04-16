@@ -1,8 +1,10 @@
 {
   "scripts": {
     "test:dep": "jest --runInBand --watchAll",
-    "test:single": "npm test -- mock.test.js",
+    "test:mock": "jest -- mock.test.js",
+    "test:message": "jest --watchAll -- messenger.test.js",
     "start": "node db/seed.js && nodemon server.js",
+    "dev": "nodemon server.js",
     "seed": "cd db && node seed.js"
   },
   "dependencies": {
