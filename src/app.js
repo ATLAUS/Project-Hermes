@@ -1,10 +1,11 @@
 require('dotenv').config('.env')
-const { userRouter, matcherRouter, partyRouter } = require('./routes')
+const cors = require('cors')
 const express = require('express')
-const app = express()
+const { createServer } = require('http')
+const { Server } = require('socket.io')
 const { auth } = require('express-oauth2-jwt-bearer')
 const { userAuth } = require('./middleware')
-const cors = require('cors')
+const { userRouter, matcherRouter, partyRouter } = require('./routes')
 const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_BASE_URL, AUTH0_SIGNING_ALGO } =
   process.env
 
@@ -15,6 +16,14 @@ const jwtCheck = auth({
   tokenSigningAlg: AUTH0_SIGNING_ALGO
 })
 
+const app = express()
+const httpServer = createServer(app)
+const socket = new Server(httpServer, {
+  cors: {
+    origin: 'http://localhost:5173'
+  }
+})
+
 app.use(cors())
 app.use(jwtCheck)
 
@@ -23,18 +32,26 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(userAuth)
 
-// FOR DEMO
+// TODO Delete once route implementation on the frontend begins.
+// FOR DEMO.
 app.get('/test', (req, res, next) => {
   res.send({ msg: 'Hello World' })
 })
 
-// User routes (mainly for manual testing)
+// User routes (mainly for manual testing).
 app.use('/api/users', userRouter)
 
-// Matcher routes
+// Matcher routes.
 app.use('/api/matchers', matcherRouter)
 
-// Party routes
+// Party routes.
 app.use('/api/parties', partyRouter)
 
-module.exports = app
+// Websocket implementation.
+socket.on('connection', (socket) => {
+  console.log('New socket connection established.')
+})
+
+module.exports = {
+  httpServer
+}

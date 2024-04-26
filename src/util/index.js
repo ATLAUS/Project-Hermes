@@ -1,4 +1,4 @@
-const { User, Matcher, Party } = require('../../models')
+const { User, Matcher, Party, Chat } = require('../../models')
 const { Op } = require('@sequelize/core')
 
 // ActiveParty assignment.
@@ -11,7 +11,7 @@ const setActiveParty = async (modelArr) => {
 }
 
 // TODO if party size is added, will need to look for a party first
-// with the same gamename and check the amount of users associated with the party.
+// with the same game name and check the amount of users associated with the party.
 const MatchFinder = async (matcher, creator) => {
   const match = await Matcher.findOne({
     where: {
@@ -28,6 +28,7 @@ const MatchFinder = async (matcher, creator) => {
     return match
   }
 
+  // TODO if a new party is create, a new CHAT needs to be created and associated as well
   const matchedUser = await User.findByPk(match.User.id)
 
   const newParty = await Party.create({

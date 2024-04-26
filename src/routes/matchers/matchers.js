@@ -29,6 +29,8 @@ router.get('/', async (req, res, next) => {
 })
 
 // Create a new Matcher and associate a User (creator).
+// Also check to see if an available matcher is ready and create
+// the party and party chat.
 router.post('/', async (req, res, next) => {
   const { userId, userName } = req.user
   //TODO Add error handling to ensure body is not empty or
