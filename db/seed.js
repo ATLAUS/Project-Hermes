@@ -33,6 +33,6 @@ const seed = async () => {
 }
 
 // UNCOMMENT WHEN DONE TESTING
-// seed()
+seed()
 
-module.exports = { seed }
+// module.exports = { seed }
