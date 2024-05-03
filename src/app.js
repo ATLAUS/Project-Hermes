@@ -6,6 +6,9 @@ const { Server } = require('socket.io')
 const { auth } = require('express-oauth2-jwt-bearer')
 const { userAuth } = require('./middleware')
 const { userRouter, matcherRouter, partyRouter } = require('./routes')
+const {
+  some
+} = require('@sequelize/core/_non-semver-use-at-your-own-risk_/utils/iterators.js')
 const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_BASE_URL, AUTH0_SIGNING_ALGO } =
   process.env
 
@@ -48,6 +51,15 @@ app.use('/api/matchers', matcherRouter)
 app.use('/api/parties', partyRouter)
 
 // Websocket implementation.
+//Socket Middleware to validate that user a member of the party id sent from the client.
+io.use((socket, next) => {
+  // Query party here.
+  console.log(socket.id)
+  const { userId, partyId } = socket.handshake.auth
+
+  next()
+})
+
 io.on('connect', (socket) => {
   console.log('New socket connection established!')
 
