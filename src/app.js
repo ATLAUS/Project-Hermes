@@ -6,9 +6,6 @@ const { Server } = require('socket.io')
 const { auth } = require('express-oauth2-jwt-bearer')
 const { userAuth } = require('./middleware')
 const { userRouter, matcherRouter, partyRouter } = require('./routes')
-const {
-  some
-} = require('@sequelize/core/_non-semver-use-at-your-own-risk_/utils/iterators.js')
 const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_BASE_URL, AUTH0_SIGNING_ALGO } =
   process.env
 
