@@ -26,15 +26,22 @@ router.get('/user-info', async (req, res, next) => {
     const user = await User.findOne({
       where: {
         id: id
-      },
-      include: {
-        model: Party
       }
     })
     if (!user) {
       return res.sendStatus(404)
     }
-    res.send({ user })
+
+    // Get users associated parties and look for an active party.
+    let activeParty = []
+    const userParties = await user.getParties()
+    for (let party of userParties) {
+      if (party.active) {
+        activeParty.push(party)
+      }
+    }
+
+    res.send({ user, activeParty })
   } catch (error) {
     next(error)
   }
