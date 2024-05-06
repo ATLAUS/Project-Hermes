@@ -35,9 +35,15 @@ router.get('/user-info', async (req, res, next) => {
     // Get users associated parties and look for an active party.
     let activeParty = []
     const userParties = await user.getParties()
+
     for (let party of userParties) {
       if (party.active) {
-        activeParty.push(party)
+        const usersActiveParty = await Party.findByPk(party.id, {
+          include: {
+            model: User
+          }
+        })
+        activeParty.push(usersActiveParty)
       }
     }
 
