@@ -35,8 +35,16 @@ const MatchFinder = async (matcher, creator) => {
     gameName: matcher.gameName
   })
 
+  const newChat = await Chat.create({
+    gameName: matcher.gameName
+  })
+
   await newParty.addUsers([creator, matchedUser])
   await newParty.addMatchers([matcher, match])
+
+  // Associate chat to a party
+  await newParty.setChat(newChat)
+  await newChat.addUsers([creator, matchedUser])
 
   let modelArray = [matcher, match, creator, matchedUser]
 
@@ -44,9 +52,7 @@ const MatchFinder = async (matcher, creator) => {
   await setActiveParty(modelArray)
 
   const partyWithUsers = await Party.findByPk(newParty.id, {
-    include: {
-      model: User
-    }
+    include: [{ model: User }, { model: Chat }]
   })
   return partyWithUsers
 }
