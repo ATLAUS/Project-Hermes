@@ -38,12 +38,6 @@ app.use(express.urlencoded({ extended: true }))
 
 app.use(userAuth)
 
-// TODO Delete once route implementation on the frontend begins.
-// FOR DEMO.
-app.get('/test', (req, res, next) => {
-  res.send({ msg: 'Hello World' })
-})
-
 // User routes (mainly for manual testing).
 app.use('/api/users', userRouter)
 
@@ -57,12 +51,12 @@ app.use('/api/parties', partyRouter)
 app.use('/api/messages/', messageRouter)
 
 /*  WEBSOCKET IMPLEMENTATION */
-//Socket Middleware to validate that user a member of the party id sent from the client.
+// Socket Middleware to validate that user a member of the party id sent from the client.
 io.use(async (socket, next) => {
   // Check that:
   // A) the requested party exists and
   // B) that the user is a member of the given party.
-  const { userId, partyId } = socket.handshake.auth
+  const { userId, partyId, chatId } = socket.handshake.auth
   const partyToJoin = await Party.findByPk(partyId, {
     include: {
       model: User
@@ -76,6 +70,7 @@ io.use(async (socket, next) => {
     if (user.userId === userId) {
       socket.roomId = partyId
       socket.userId = userId
+      socket.chatId = chatId
       return next()
     }
   }
@@ -89,9 +84,8 @@ io.on('connect', (socket) => {
   console.log(`Connected ${socket.userId} to room ${socket.roomId}`)
 
   // Client sends a message
-  socket.on('send-message', (args) => {
-    console.log(args)
-    io.emit('return-message', args)
+  socket.on('send-message', ({ message, to }) => {
+    console.log(message, 'for party', to)
   })
 
   // Disconnection event
