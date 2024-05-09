@@ -1,5 +1,5 @@
 const express = require('express')
-const { User, Party } = require('../../../models')
+const { User, Party, Chat } = require('../../../models')
 const router = express.Router()
 
 // Find all users (for testing purposes).
@@ -39,9 +39,7 @@ router.get('/user-info', async (req, res, next) => {
     for (let party of userParties) {
       if (party.active) {
         const usersActiveParty = await Party.findByPk(party.id, {
-          include: {
-            model: User
-          }
+          include: [{ model: User }, { model: Chat }]
         })
         activeParty.push(usersActiveParty)
       }
