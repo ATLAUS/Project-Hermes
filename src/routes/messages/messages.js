@@ -15,7 +15,12 @@ router.get('/:partyId', async (req, res, next) => {
 
     const messages = await associatedChat.Chat.getMessages()
 
-    console.log(JSON.stringify(messages, 0, 2))
+    if (messages.length > 0) {
+      return res.send({ messages })
+    }
+    // TODO Figure out what to send if there are no messages.
+    // IDEA: empty array and check it on the client side.
+    next()
   } catch (error) {
     next(error)
   }
