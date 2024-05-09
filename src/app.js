@@ -11,7 +11,7 @@ const {
   partyRouter,
   messageRouter
 } = require('./routes')
-const { Party, User } = require('../models')
+const { Party, User, Message } = require('../models')
 const { AUTH0_SECRET, AUTH0_AUDIENCE, AUTH0_BASE_URL, AUTH0_SIGNING_ALGO } =
   process.env
 
@@ -84,8 +84,18 @@ io.on('connect', (socket) => {
   console.log(`Connected ${socket.userId} to room ${socket.roomId}`)
 
   // Client sends a message
-  socket.on('send-message', ({ message, to }) => {
-    console.log(message, 'for party', to)
+  socket.on('send-message', async ({ message, to, userId, chatId }) => {
+    // Create a new message instance in the DB and associate the user and chat.
+    const newMessage = await Message.create({
+      message,
+      UserId: userId,
+      ChatId: chatId
+    })
+
+    // Send the newly created message to all connected clients.
+    io.to(to.toString()).emit('return-message', {
+      newMessage
+    })
   })
 
   // Disconnection event
